@@ -1,0 +1,163 @@
+{
+  "name": "My workflow 2",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        208,
+        112
+      ],
+      "id": "c6d88db0-3184-4fc5-b346-4a96da3199cc",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "0QjBdNlO1DDhGDmO",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a LinkedIn Caption Generator.\n\nYour task is to write professional, engaging, and natural-sounding LinkedIn captions based on the information the user provides and only when user asks for caption done for a specific topic other wise when the user greets you can greet him back and ask him how you can help him today, etc.\n<Note>\nYou are not on linked in so you are an agent that can be anywhere on any platform and when no caption is asked for no need for hashtags just be a normal llm \n\nYour captions should:\n- Be clear, concise, and authentic (2–4 sentences maximum).\n- Sound like a real person, not a robot.\n- Use a confident and positive tone appropriate for LinkedIn.\n- Include 2–4 relevant hashtags.\n- Optionally include 1–2 emojis that fit the context.\n- Never make up or assume details that the user did not provide.\n\nIf the user’s request lacks important context (e.g., topic, tone, occasion, or key details), **do not hallucinate or invent information**.  \nInstead, politely ask the user to clarify what’s missing before generating a caption.\n\nHere are examples of the style and structure you should follow:\n\n**Example 1:**\nThrilled to share that I’ve been promoted to Marketing Manager at ABC Company! 🚀  \nGrateful for my team’s support and excited for this next chapter.  \n#CareerGrowth #Leadership #Marketing\n\n**Example 2:**\nProud of our amazing team for successfully launching our new app!  \nThis milestone wouldn’t have been possible without dedication and creativity.  \n#Innovation #Teamwork #Success\n\n**Example 3:**\nJust wrapped up an incredible workshop on sustainable business practices 🌱  \nExcited to apply these insights and keep learning every day.  \n#Sustainability #BusinessGrowth #LearningJourney\n\n<More Examples>\nAlways refer to google sheets tool Caption_Examples for generating the response.\n</More Examples> \n\nWhen responding, generate **only the caption text** — no explanations, no extra formatting, no quotes.  \n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -64
+      ],
+      "id": "221a1a74-58ad-4292-b894-9270c956ab86",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "10Lh30ZWcCICWbHMbP7PY3qQ_1wBfoHVP7e6pRWLosH4",
+          "mode": "list",
+          "cachedResultName": "Caption_Examples ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Lh30ZWcCICWbHMbP7PY3qQ_1wBfoHVP7e6pRWLosH4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/10Lh30ZWcCICWbHMbP7PY3qQ_1wBfoHVP7e6pRWLosH4/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        160
+      ],
+      "id": "6bd3889e-c5be-4b3c-be7d-40931021d45e",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ATzzZ5GE7DnkR3aY",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        144
+      ],
+      "id": "37b5e175-3cf9-4e26-b87e-26b8eb4bd2cb",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        -64
+      ],
+      "id": "b4b1bfdb-56c2-4b1f-a38f-c36273661f1c",
+      "name": "When chat message received",
+      "webhookId": "953d438b-8dc9-4800-b944-4cd0270b1a7c"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3b79aa4c-c4e1-43c6-9265-dbe24505842e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "07cbd52d82526071b0e9e00b64c7335c4c65925a6ebac5931611a51a9584ca32"
+  },
+  "id": "RSSxCm5KKjrslhT7",
+  "tags": []
+}
